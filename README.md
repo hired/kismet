@@ -40,6 +40,15 @@ Set your own custom partition keys for more control:
 ```ruby
 writer.put!('Partition me plz', 'custom-partition-key')
 ```
+If the write was successful, you will receive a hash containing information on the sequence:
+```ruby
+{
+  shard_id: 'shardId-000000000000',
+  sequence_number: "4958346487696888260659175585929606951089842765911.....",
+  encryption_type: nil
+}
+```
+If the write failed, it will return `nil`.
 
 ## Development
 
