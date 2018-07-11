@@ -1,4 +1,4 @@
-# Kismet
+# Kismet [![Build Status](https://travis-ci.org/hired/kismet.svg?branch=master)](https://travis-ci.org/hired/kismet)
 
 This gem provides a simple method of writing data to an AWS Kinesis stream.
 

@@ -9,7 +9,6 @@ module Kismet
     # this pulls the AWS credentials stored in the environment.
     # Optionally accepts an array of options:
     # - region: Specify the AWS region the stream is located within.
-    #
     def initialize(stream, options = {})
       @stream = stream
       region = options[:region] || nil
@@ -26,6 +25,8 @@ module Kismet
     # Writes data to the stream initialized in the AWS::Kinesis::Client.
     # Optionally accepts a partition_key parameter to allow for manual
     # partitioning / management of shards.
+    #
+    # Returns a hash on success, otherwise nil
     def put!(data, partition_key = nil)
       # If the client isn't valid, don't go through with the request.
       return false unless @client
@@ -37,19 +38,23 @@ module Kismet
       data = data.to_json if data.is_a?(Hash)
       data = data.to_s if data.is_a?(Numeric)
 
-      sequence_number = nil
+      response = nil
       begin
-        response = @client.put_record(
+        request = @client.put_record(
           stream_name: @stream,
           data: data,
           partition_key: partition_key
         )
-        sequence_number = response.sequence_number
+        response = {
+          shard_id: request.shard_id,
+          sequence_number: request.sequence_number,
+          encryption_type: request.encryption_type
+        }
       rescue Aws::Kinesis::Errors::ServiceError
-        sequence_number = nil
+        response = nil
       end
 
-      sequence_number
+      response
     end
 
   end
